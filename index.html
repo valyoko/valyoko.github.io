@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Список участников</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #222;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background-color: #333;
+    border: 1px solid #444;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  th, td {
+    border: 1px solid #444;
+    padding: 10px;
+    text-align: center;
+  }
+  th {
+    background-color: #555;
+  }
+  tr:nth-child(even) {
+    background-color: #444;
+  }
+  tr:hover {
+    background-color: #666;
+  }
+  input {
+    width: calc(100% - 20px);
+    padding: 5px 10px;
+    border: 1px solid #888;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #222;
+    color: #fff;
+  }
+  button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  button:hover {
+    background-color: #45a049;
+  }
+</style>
+</head>
+<body>
+<table id="participants">
+  <thead>
+    <tr>
+      <th>Место</th>
+      <th>Ник</th>
+      <th>Сумма бонуски</th>
+      <th>Ставка</th>
+      <th>X</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Здесь будут добавляться строки участников -->
+  </tbody>
+</table>
+<button onclick="addParticipant()">Добавить</button>
+
+<script>
+  // Функция для добавления участника
+  function addParticipant() {
+    var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
+    var newRow = table.insertRow();
+    var cells = [];
+    for (var i = 0; i < 6; i++) {
+      cells.push(newRow.insertCell(i));
+    }
+    cells[0].innerText = table.rows.length; // Место
+    cells[1].innerHTML = '<input type="text">'; // Ник
+    cells[2].innerHTML = '<input type="number">'; // Сумма
+    cells[3].innerHTML = '<input type="number">'; // Ставка
+    cells[4].innerText = ""; // Иксовка
+    cells[5].innerHTML = '<button onclick="deleteParticipant(this)">Удалить</button>'; // Кнопка удаления
+
+    // Сохранение данных в localStorage
+    saveData();
+  }
+
+  // Функция для удаления участника
+  function deleteParticipant(btn) {
+    var row = btn.parentNode.parentNode;
+    row.parentNode.removeChild(row);
+    // Сохранение данных в localStorage после удаления
+    saveData();
+  }
+
+  // Функция для сохранения данных в localStorage
+  function saveData() {
+    var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
+    var data = [];
+    for (var i = 0; i < table.rows.length; i++) {
+      var row = table.rows[i];
+      var rowData = {
+        nickname: row.cells[1].querySelector('input').value,
+        amount: row.cells[2].querySelector('input').value,
+        bet: row.cells[3].querySelector('input').value
+      };
+      data.push(rowData);
+    }
+    localStorage.setItem('participantsData', JSON.stringify(data));
+  }
+
+  // Функция для загрузки данных из localStorage
+  function loadData() {
+    var data = localStorage.getItem('participantsData');
+    if (data) {
+      var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
+      var rows = JSON.parse(data);
+      for (var i = 0; i < rows.length; i++) {
+        var newRow = table.insertRow();
+        newRow.insertCell(0).innerText = table.rows.length; // Место
+        newRow.insertCell(1).innerHTML = '<input type="text" value="' + rows[i].nickname + '">'; // Ник
+        newRow.insertCell(2).innerHTML = '<input type="number" value="' + rows[i].amount + '">'; // Сумма
+        newRow.insertCell(3).innerHTML = '<input type="number" value="' + rows[i].bet + '">'; // Ставка
+        newRow.insertCell(4).innerText = (parseFloat(rows[i].amount) / parseFloat(rows[i].bet)).toFixed(2); // Иксовка
+        newRow.insertCell(5).innerHTML = '<button onclick="deleteParticipant(this)">Удалить</button>'; // Кнопка удаления
+      }
+    }
+  }
+
+  // Загрузка данных из localStorage при загрузке страницы
+  window.onload = loadData;
+
+  // Обновление мест при изменении данных
+  document.addEventListener('input', function(e) {
+    if (e.target.closest('td')) {
+      updatePositions();
+    }
+  });
+
+  // Функция для обновления мест участников
+  function updatePositions() {
+    var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
+    var rows = table.rows;
+    var participants = [];
+    for (var i = 0; i < rows.length; i++) {
+      var amount = parseFloat(rows[i].cells[2].getElementsByTagName('input')[0].value.trim());
+      var bet = parseFloat(rows[i].cells[3].getElementsByTagName('input')[0].value.trim());
+      var xValue = amount / bet;
+      rows[i].cells[4].innerText = xValue.toFixed(2); // Округляем иксовку до двух знаков после запятой
+      participants.push({
+        row: rows[i],
+        xValue: xValue
+      });
+    }
+    participants.sort(function(a, b) {
+      return b.xValue - a.xValue;
+    });
+    for (var i = 0; i < participants.length; i++) {
+      participants[i].row.cells[0].innerText = i + 1;
+    }
+  }
+
+</script>
+</body>
+</html>
