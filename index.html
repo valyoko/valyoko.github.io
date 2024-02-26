@@ -64,6 +64,7 @@
       <th>Место</th>
       <th>Ник</th>
       <th>Сумма бонуски</th>
+      <th>Выигрыш</th>
       <th>Ставка</th>
       <th>X</th>
       <th></th>
@@ -81,15 +82,16 @@
     var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
     var newRow = table.insertRow();
     var cells = [];
-    for (var i = 0; i < 6; i++) {
+    for (var i = 0; i < 7; i++) {
       cells.push(newRow.insertCell(i));
     }
     cells[0].innerText = table.rows.length; // Место
     cells[1].innerHTML = '<input type="text">'; // Ник
-    cells[2].innerHTML = '<input type="number">'; // Сумма
-    cells[3].innerHTML = '<input type="number">'; // Ставка
-    cells[4].innerText = ""; // Иксовка
-    cells[5].innerHTML = '<button onclick="deleteParticipant(this)">Удалить</button>'; // Кнопка удаления
+    cells[2].innerHTML = '<input type="number">'; // Сумма бонуски
+    cells[3].innerHTML = '<input type="number">'; // Выигрыш
+    cells[4].innerHTML = '<input type="number">'; // Ставка
+    cells[5].innerText = ""; // Иксовка
+    cells[6].innerHTML = '<button onclick="deleteParticipant(this)">Удалить</button>'; // Кнопка удаления
 
     // Сохранение данных в localStorage
     saveData();
@@ -112,7 +114,8 @@
       var rowData = {
         nickname: row.cells[1].querySelector('input').value,
         amount: row.cells[2].querySelector('input').value,
-        bet: row.cells[3].querySelector('input').value
+        win: row.cells[3].querySelector('input').value,
+        bet: row.cells[4].querySelector('input').value
       };
       data.push(rowData);
     }
@@ -129,10 +132,11 @@
         var newRow = table.insertRow();
         newRow.insertCell(0).innerText = table.rows.length; // Место
         newRow.insertCell(1).innerHTML = '<input type="text" value="' + rows[i].nickname + '">'; // Ник
-        newRow.insertCell(2).innerHTML = '<input type="number" value="' + rows[i].amount + '">'; // Сумма
-        newRow.insertCell(3).innerHTML = '<input type="number" value="' + rows[i].bet + '">'; // Ставка
-        newRow.insertCell(4).innerText = (parseFloat(rows[i].amount) / parseFloat(rows[i].bet)).toFixed(2); // Иксовка
-        newRow.insertCell(5).innerHTML = '<button onclick="deleteParticipant(this)">Удалить</button>'; // Кнопка удаления
+        newRow.insertCell(2).innerHTML = '<input type="number" value="' + rows[i].amount + '">'; // Сумма бонуски
+        newRow.insertCell(3).innerHTML = '<input type="number" value="' + rows[i].win + '">'; // Выигрыш
+        newRow.insertCell(4).innerHTML = '<input type="number" value="' + rows[i].bet + '">'; // Ставка
+        newRow.insertCell(5).innerText = (parseFloat(rows[i].win) / parseFloat(rows[i].bet)).toFixed(2); // Иксовка
+        newRow.insertCell(6).innerHTML = '<button onclick="deleteParticipant(this)">Удалить</button>'; // Кнопка удаления
       }
     }
   }
@@ -144,6 +148,7 @@
   document.addEventListener('input', function(e) {
     if (e.target.closest('td')) {
       updatePositions();
+      saveData();
     }
   });
 
@@ -153,10 +158,10 @@
     var rows = table.rows;
     var participants = [];
     for (var i = 0; i < rows.length; i++) {
-      var amount = parseFloat(rows[i].cells[2].getElementsByTagName('input')[0].value.trim());
-      var bet = parseFloat(rows[i].cells[3].getElementsByTagName('input')[0].value.trim());
-      var xValue = amount / bet;
-      rows[i].cells[4].innerText = xValue.toFixed(2); // Округляем иксовку до двух знаков после запятой
+      var win = parseFloat(rows[i].cells[3].getElementsByTagName('input')[0].value.trim());
+      var bet = parseFloat(rows[i].cells[4].getElementsByTagName('input')[0].value.trim());
+      var xValue = win / bet;
+      rows[i].cells[5].innerText = xValue.toFixed(2); // Округляем иксовку до двух знаков после запятой
       participants.push({
         row: rows[i],
         xValue: xValue
