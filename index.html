@@ -17,12 +17,11 @@
     height: 100vh;
   }
   #container {
-    width: 90%;
-    max-width: 800px;
     border-radius: 10px;
     overflow: hidden;
     background-color: #333;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: inline-block;
   }
   #scrollable-content {
     max-height: 600px;
@@ -49,7 +48,7 @@
     background-color: #666;
   }
   input {
-    width: calc(100% - 16px);
+    width: calc(100% - 20px);
     padding: 5px 8px;
     border: none;
     border-radius: 4px;
@@ -70,75 +69,93 @@
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
-    width: calc(100% - 16px);
-    margin: 8px;
+    width: calc(50% - 16px);
+    margin: 8px 8px 8px 0; /* Изменен отступ для кнопок */
+  }
+  button.sort {
+    background-color: #008CBA;
   }
   button:hover {
     background-color: #45a049;
   }
+  td input[type="text"] {
+    width: 200px;
+  }
+  td button {
+    padding: 5px 10px; /* Изменены размеры кнопки удалить */
+    background-color: #f44336; /* Изменен цвет кнопки удалить */
+    width: 100%; /* Ширина кнопки удалить равна 100% */
+    border-radius: 4px; /* Применен border-radius */
+  }
 </style>
 </head>
 <body>
-<div id="container">
-  <div id="scrollable-content">
-    <table id="participants">
-      <thead>
-        <tr>
-          <th>Место</th>
-          <th>Ник</th>
-          <th>Слот</th> <!-- Добавленное поле "Слот" -->
-          <th>Сумма бонуски</th>
-          <th>Выигрыш</th>
-          <th>X</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Здесь будут добавляться строки участников -->
-      </tbody>
-    </table>
+  <div id="container">
+    <div id="scrollable-content">
+      <table id="participants">
+        <thead>
+          <tr>
+            <th>Место</th>
+            <th>Ник</th>
+            <th>Слот</th>
+            <th>Сумма бонуски</th>
+            <th>Выигрыш</th>
+            <th>X</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Здесь будут добавляться строки участников -->
+        </tbody>
+      </table>
+    </div>
+    <button onclick="addParticipant()">Добавить</button>
+    <button onclick="sortParticipants()">Сортировать</button>
   </div>
-  <button onclick="addParticipant()">Добавить</button>
-</div>
 
-<script>
-  // Функция для добавления участника
-  function addParticipant() {
-    var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
-    var newRow = table.insertRow();
-    var cells = [];
-    for (var i = 0; i < 7; i++) { // Увеличили счетчик на 1, чтобы добавить ячейку для поля "Слот"
-      cells.push(newRow.insertCell(i));
+  <script>
+    // Переменная для хранения идентификатора пользователя
+    var userId = 0;
+
+    // Функция для добавления участника
+    function addParticipant() {
+      var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
+      var newRow = table.insertRow();
+      var cells = [];
+      for (var i = 0; i < 7; i++) { // Увеличили счетчик на 1, чтобы добавить ячейку для поля "Слот"
+        cells.push(newRow.insertCell(i));
+      }
+      userId++; // Увеличиваем идентификатор пользователя
+      cells[0].innerText = table.rows.length; // Место
+      cells[1].innerHTML = '<input type="text">'; // Ник
+      cells[2].innerHTML = '<input type="text">'; // Слот
+      cells[3].innerHTML = '<input type="number">'; // Сумма бонуски
+      cells[4].innerHTML = '<input type="number">'; // Выигрыш
+      cells[5].innerText = ""; // Иксовка
+      cells[6].innerHTML = '<button onclick="deleteParticipant(' + userId + ')">Удалить</button>'; // Кнопка удаления
     }
-    cells[0].innerText = table.rows.length; // Место
-    cells[1].innerHTML = '<input type="text">'; // Ник
-    cells[2].innerHTML = '<input type="text">'; // Слот
-    cells[3].innerHTML = '<input type="number">'; // Сумма бонуски
-    cells[4].innerHTML = '<input type="number">'; // Выигрыш
-    cells[5].innerText = ""; // Иксовка
-    cells[6].innerHTML = '<button onclick="deleteParticipant(this)">Удалить</button>'; // Кнопка удаления
+  
+    // Функция для удаления участника
+    function deleteParticipant(userId) {
+      var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
+      for (var i = 0; i < table.rows.length; i++) {
+        if (table.rows[i].getAttribute("data-user-id") == userId) {
+          table.deleteRow(i);
+          break;
+        }
+      }
+      updatePositions(); // Обновляем места после удаления участника
+    }
 
-    // Сохранение данных в localStorage
-    saveData();
-  }
-
-  // Функция для удаления участника
-  function deleteParticipant(btn) {
-    var row = btn.parentNode.parentNode;
-    row.parentNode.removeChild(row);
-    // Сохранение данных в localStorage после удаления
-    saveData();
-  }
-
-  // Функция для сохранения данных в localStorage
   function saveData() {
     var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
     var data = [];
     for (var i = 0; i < table.rows.length; i++) {
       var row = table.rows[i];
       var rowData = {
+        userId: row.getAttribute("data-user-id"), // Добавляем идентификатор пользователя в данные
         nickname: row.cells[1].querySelector('input').value,
-        slot: row.cells[2].querySelector('input').value, // Добавляем значение поля "Слот"
+        slot: row.cells[2].querySelector('input').value, 
         amount: row.cells[3].querySelector('input').value,
         win: row.cells[4].querySelector('input').value,
       };
@@ -147,7 +164,6 @@
     localStorage.setItem('participantsData', JSON.stringify(data));
   }
 
-  // Функция для загрузки данных из localStorage
   function loadData() {
     var data = localStorage.getItem('participantsData');
     if (data) {
@@ -155,21 +171,21 @@
       var rows = JSON.parse(data);
       for (var i = 0; i < rows.length; i++) {
         var newRow = table.insertRow();
-        newRow.insertCell(0).innerText = table.rows.length; // Место
-        newRow.insertCell(1).innerHTML = '<input type="text" value="' + rows[i].nickname + '">'; // Ник
-        newRow.insertCell(2).innerHTML = '<input type="text" value="' + rows[i].slot + '">'; // Слот
-        newRow.insertCell(3).innerHTML = '<input type="number" value="' + rows[i].amount + '">'; // Сумма бонуски
-        newRow.insertCell(4).innerHTML = '<input type="number" value="' + rows[i].win + '">'; // Выигрыш
-        newRow.insertCell(5).innerText = (parseFloat(rows[i].win) / (parseFloat(rows[i].amount) / 100)).toFixed(2); // Иксовка
-        newRow.insertCell(6).innerHTML = '<button onclick="deleteParticipant(this)">Удалить</button>'; // Кнопка удаления
+        userId++; // Увеличиваем идентификатор пользователя
+        newRow.setAttribute("data-user-id", userId); // Устанавливаем идентификатор пользователя для строки
+        newRow.insertCell(0).innerText = table.rows.length;
+        newRow.insertCell(1).innerHTML = '<input type="text" value="' + rows[i].nickname + '">';
+        newRow.insertCell(2).innerHTML = '<input type="text" value="' + rows[i].slot + '">';
+        newRow.insertCell(3).innerHTML = '<input type="number" value="' + rows[i].amount + '">';
+        newRow.insertCell(4).innerHTML = '<input type="number" value="' + rows[i].win + '">';
+        newRow.insertCell(5).innerText = (parseFloat(rows[i].win) / (parseFloat(rows[i].amount) / 100)).toFixed(2);
+        newRow.insertCell(6).innerHTML = '<button onclick="deleteParticipant(' + userId + ')">Удалить</button>';
       }
     }
   }
 
-  // Загрузка данных из localStorage при загрузке страницы
   window.onload = loadData;
 
-  // Обновление мест при изменении данных
   document.addEventListener('input', function(e) {
     if (e.target.closest('td')) {
       updatePositions();
@@ -177,7 +193,6 @@
     }
   });
 
-  // Функция для обновления мест участников
   function updatePositions() {
     var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
     var rows = table.rows;
@@ -186,18 +201,26 @@
       var win = parseFloat(rows[i].cells[4].querySelector('input').value.trim());
       var amount = parseFloat(rows[i].cells[3].querySelector('input').value.trim());
       var xValue = win / (amount / 100);
-      rows[i].cells[5].innerText = xValue.toFixed(2); // Округляем иксовку до двух знаков после запятой
+      rows[i].cells[5].innerText = xValue.toFixed(2);
       participants.push({
         row: rows[i],
         xValue: xValue
       });
     }
-    participants.sort(function(a, b) {
-      return b.xValue - a.xValue;
+  }
+
+  // Функция для сортировки участников по местам
+  function sortParticipants() {
+    var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
+    var rows = Array.from(table.rows).slice(1); // Пропускаем заголовок
+    rows.sort(function(a, b) {
+      return parseFloat(b.cells[5].innerText) - parseFloat(a.cells[5].innerText); // Сортировка по убыванию значения Иксовка
     });
-    for (var i = 0; i < participants.length; i++) {
-      participants[i].row.cells[0].innerText = i + 1;
-    }
+    // Добавляем отсортированные строки
+    rows.forEach(function(row, index) {
+      table.appendChild(row);
+    });
+    updatePositions(); // Обновляем места после сортировки
   }
 </script>
 </body>
