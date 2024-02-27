@@ -24,14 +24,18 @@
     background-color: #333;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
+  #scrollable-content {
+    max-height: 800px; /* Уменьшаем высоту контейнера */
+    overflow: auto;
+  }
   table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
+    margin-bottom: 10px; /* Уменьшаем отступ после таблицы */
   }
   th, td {
     border: 1px solid #444;
-    padding: 10px;
+    padding: 8px;
     text-align: center;
     background-color: #444;
   }
@@ -45,8 +49,8 @@
     background-color: #666;
   }
   input {
-    width: calc(100% - 20px);
-    padding: 5px 10px;
+    width: calc(100% - 16px); /* Уменьшаем ширину полей ввода */
+    padding: 5px 8px;
     border: none;
     border-radius: 4px;
     box-sizing: border-box;
@@ -59,15 +63,15 @@
     background-color: #333;
   }
   button {
-    padding: 10px 20px;
+    padding: 8px 16px; /* Уменьшаем отступы кнопки */
     background-color: #4CAF50;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
-    width: calc(100% - 20px);
-    margin: 10px;
+    width: calc(100% - 16px);
+    margin: 8px;
   }
   button:hover {
     background-color: #45a049;
@@ -76,21 +80,23 @@
 </head>
 <body>
 <div id="container">
-  <table id="participants">
-    <thead>
-      <tr>
-        <th>Место</th>
-        <th>Ник</th>
-        <th>Сумма бонуски</th>
-        <th>Выигрыш</th>
-        <th>X</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Здесь будут добавляться строки участников -->
-    </tbody>
-  </table>
+  <div id="scrollable-content">
+    <table id="participants">
+      <thead>
+        <tr>
+          <th>Место</th>
+          <th>Ник</th>
+          <th>Сумма бонуски</th>
+          <th>Выигрыш</th>
+          <th>X</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Здесь будут добавляться строки участников -->
+      </tbody>
+    </table>
+  </div>
   <button onclick="addParticipant()">Добавить</button>
 </div>
 
