@@ -149,6 +149,7 @@
     font-weight: bold;
     color: white;
     font-style: normal;
+    border-top: 9px solid #272727; 
   }
   /* Стили для полосы прокрутки */
 #scrollable-content::-webkit-scrollbar {
@@ -198,21 +199,22 @@
     var userId = 0;
 
     function addParticipant() {
-      var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
-      var newRow = table.insertRow();
-      var cells = [];
-      for (var i = 0; i < 7; i++) {
-        cells.push(newRow.insertCell(i));
-      }
-      userId++;
-      cells[0].innerText = table.rows.length;
-      cells[1].innerHTML = '<input type="text">';
-      cells[2].innerHTML = '<input type="text">';
-      cells[3].innerHTML = '<input type="number">';
-      cells[4].innerHTML = '<input type="number">';
-      cells[5].innerText = "";
-      cells[6].innerHTML = '<button onclick="deleteParticipant(' + userId + ')">Удалить</button>';
-    }
+  var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
+  var newRow = table.insertRow();
+  var cells = [];
+  for (var i = 0; i < 7; i++) {
+    cells.push(newRow.insertCell(i));
+  }
+  userId++;
+  newRow.setAttribute("data-user-id", userId); // Установка атрибута data-user-id для новой строки
+  cells[0].innerText = table.rows.length;
+  cells[1].innerHTML = '<input type="text">';
+  cells[2].innerHTML = '<input type="text">';
+  cells[3].innerHTML = '<input type="number">';
+  cells[4].innerHTML = '<input type="number">';
+  cells[5].innerText = "";
+  cells[6].innerHTML = '<button onclick="deleteParticipant(' + userId + ')">Удалить</button>';
+}
   
     function deleteParticipant(userId) {
       var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
@@ -288,6 +290,14 @@
       highlightTopParticipants(participants);
     }
 
+    function refreshUserIds() {
+  var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
+  var rows = table.rows;
+  for (var i = 0; i < rows.length; i++) {
+    rows[i].setAttribute("data-user-id", i + 1);
+  }
+}
+
     function highlightTopParticipants(participants) {
       participants.sort(function(a, b) {
         return b.xValue - a.xValue;
@@ -316,6 +326,7 @@
         table.appendChild(row);
       });
       updatePositions();
+      refreshUserIds();
     }
 
     function finish() {
