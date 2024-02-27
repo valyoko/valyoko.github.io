@@ -205,8 +205,6 @@
   for (var i = 0; i < 7; i++) {
     cells.push(newRow.insertCell(i));
   }
-  saveData();
-  
   userId++;
   newRow.setAttribute("data-user-id", userId); // Установка атрибута data-user-id для новой строки
   cells[0].innerText = table.rows.length;
@@ -262,7 +260,9 @@
           newRow.insertCell(3).innerHTML = '<input type="number" value="' + rows[i].amount + '">';
           newRow.insertCell(4).innerHTML = '<input type="number" value="' + rows[i].win + '">';
           newRow.insertCell(5).innerText = (parseFloat(rows[i].win) / (parseFloat(rows[i].amount) / 100)).toFixed(2);
-          newRow.insertCell(6).innerHTML = '<button onclick="deleteParticipant(' + userId + ')">Удалить</button>';
+          newRow.insertCell(6).innerHTML = '<button onclick="deleteParticipant(' + userId + ')">Удалить</button>'; {
+            saveData();
+          }
         }
       }
     }
