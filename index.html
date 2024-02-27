@@ -5,88 +5,159 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Список участников</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #222;
-    color: #fff;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+body {
+  font-family: Arial, sans-serif;
+  background-color: #222;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#container {
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #333;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+}
+
+#scrollable-content {
+  max-height: 600px;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+}
+
+th,
+td {
+  border: 1px solid #444;
+  padding: 8px;
+  text-align: center;
+  background-color: #444;
+}
+
+th {
+  background-color: #555;
+}
+
+tr:nth-child(even) {
+  background-color: #444;
+}
+
+tr:hover {
+  background-color: #666;
+}
+
+input {
+  width: calc(100% - 20px);
+  padding: 5px 8px;
+  border: none;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: #222;
+  color: #fff;
+  transition: background-color 0.3s;
+}
+
+input:focus {
+  outline: none;
+  background-color: #333;
+}
+
+button {
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: calc(50% - 16px);
+  margin: 8px 8px 8px 0;
+}
+
+button.sort {
+  background-color: #008CBA;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+td input[type="text"] {
+  width: 200px;
+}
+
+td button {
+  padding: 5px 10px;
+  background-color: #f44336;
+  width: 100%;
+  border-radius: 4px;
+}
+
+/* Анимация сортировки */
+th:hover {
+  background-color: #555;
+  transition: background-color 0.3s;
+}
+
+th::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #fff;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+th.sorted-asc::after {
+  opacity: 1;
+  transform: translateY(-50%) rotate(180deg);
+}
+
+th.sorted-desc::after {
+  opacity: 1;
+}
+
+/* Стили для значения X */
+td:nth-child(6) {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+td:nth-child(6).highlight {
+  color: #00ff00;
+  animation: glow 1s infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    color: #00ff00;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.5), 
+                   0 0 20px rgba(0, 255, 0, 0.25), 
+                   0 0 20px rgba(0, 255, 0, 0.25), 
+                   0 0 20px rgba(0, 255, 0, 0.25), 
+                   0 0 20px rgba(0, 255, 0, 0.25), 
+                   0 0 5px rgba(0, 255, 0, 0.25), 
+                   0 0 5px rgba(0, 255, 0, 0.25);
   }
-  #container {
-    border-radius: 10px;
-    overflow: hidden;
-    background-color: #333;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    display: inline-block;
+  to {
+    color: #0f0;
+    text-shadow: none;
   }
-  #scrollable-content {
-    max-height: 600px;
-    overflow: auto;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 10px;
-  }
-  th, td {
-    border: 1px solid #444;
-    padding: 8px;
-    text-align: center;
-    background-color: #444;
-  }
-  th {
-    background-color: #555;
-  }
-  tr:nth-child(even) {
-    background-color: #444;
-  }
-  tr:hover {
-    background-color: #666;
-  }
-  input {
-    width: calc(100% - 20px);
-    padding: 5px 8px;
-    border: none;
-    border-radius: 4px;
-    box-sizing: border-box;
-    background-color: #222;
-    color: #fff;
-    transition: background-color 0.3s;
-  }
-  input:focus {
-    outline: none;
-    background-color: #333;
-  }
-  button {
-    padding: 8px 16px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    width: calc(50% - 16px);
-    margin: 8px 8px 8px 0; /* Изменен отступ для кнопок */
-  }
-  button.sort {
-    background-color: #008CBA;
-  }
-  button:hover {
-    background-color: #45a049;
-  }
-  td input[type="text"] {
-    width: 200px;
-  }
-  td button {
-    padding: 5px 10px; /* Изменены размеры кнопки удалить */
-    background-color: #f44336; /* Изменен цвет кнопки удалить */
-    width: 100%; /* Ширина кнопки удалить равна 100% */
-    border-radius: 4px; /* Применен border-radius */
-  }
+}
 </style>
 </head>
 <body>
@@ -117,23 +188,30 @@
     // Переменная для хранения идентификатора пользователя
     var userId = 0;
 
+    // Объект, представляющий участника
+    function Participant(userId) {
+      this.userId = userId;
+    }
+
     // Функция для добавления участника
     function addParticipant() {
-      var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
-      var newRow = table.insertRow();
-      var cells = [];
-      for (var i = 0; i < 7; i++) { // Увеличили счетчик на 1, чтобы добавить ячейку для поля "Слот"
-        cells.push(newRow.insertCell(i));
-      }
-      userId++; // Увеличиваем идентификатор пользователя
-      cells[0].innerText = table.rows.length; // Место
-      cells[1].innerHTML = '<input type="text">'; // Ник
-      cells[2].innerHTML = '<input type="text">'; // Слот
-      cells[3].innerHTML = '<input type="number">'; // Сумма бонуски
-      cells[4].innerHTML = '<input type="number">'; // Выигрыш
-      cells[5].innerText = ""; // Иксовка
-      cells[6].innerHTML = '<button onclick="deleteParticipant(' + userId + ')">Удалить</button>'; // Кнопка удаления
-    }
+  var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
+  var newRow = table.insertRow();
+  var cells = [];
+  for (var i = 0; i < 7; i++) { // Увеличили счетчик на 1, чтобы добавить ячейку для поля "Слот"
+    cells.push(newRow.insertCell(i));
+  }
+  userId++; // Увеличиваем идентификатор пользователя
+  cells[0].innerText = table.rows.length; // Место
+  cells[1].innerHTML = '<input type="text">'; // Ник
+  cells[2].innerHTML = '<input type="text">'; // Слот
+  cells[3].innerHTML = '<input type="number">'; // Сумма бонуски
+  cells[4].innerHTML = '<input type="number">'; // Выигрыш
+  cells[5].innerText = ""; // Иксовка
+  cells[6].innerHTML = '<button onclick="deleteParticipant(' + userId + ')">Удалить</button>'; // Кнопка удаления
+  highlightTopParticipants(); // Применяем стили к верхним участникам
+}
+
   
     // Функция для удаления участника
     function deleteParticipant(userId) {
@@ -171,15 +249,15 @@
       var rows = JSON.parse(data);
       for (var i = 0; i < rows.length; i++) {
         var newRow = table.insertRow();
-        userId++; // Увеличиваем идентификатор пользователя
-        newRow.setAttribute("data-user-id", userId); // Устанавливаем идентификатор пользователя для строки
+        var participant = new Participant(++userId); // Увеличиваем идентификатор пользователя
+        newRow.setAttribute("data-user-id", participant.userId); // Устанавливаем идентификатор пользователя для строки
         newRow.insertCell(0).innerText = table.rows.length;
         newRow.insertCell(1).innerHTML = '<input type="text" value="' + rows[i].nickname + '">';
         newRow.insertCell(2).innerHTML = '<input type="text" value="' + rows[i].slot + '">';
         newRow.insertCell(3).innerHTML = '<input type="number" value="' + rows[i].amount + '">';
         newRow.insertCell(4).innerHTML = '<input type="number" value="' + rows[i].win + '">';
         newRow.insertCell(5).innerText = (parseFloat(rows[i].win) / (parseFloat(rows[i].amount) / 100)).toFixed(2);
-        newRow.insertCell(6).innerHTML = '<button onclick="deleteParticipant(' + userId + ')">Удалить</button>';
+        newRow.insertCell(6).innerHTML = '<button onclick="deleteParticipant(' + participant.userId + ')">Удалить</button>';
       }
     }
   }
@@ -206,31 +284,65 @@
         row: rows[i],
         xValue: xValue
       });
+      saveData();
     }
+    highlightTopParticipants(participants);
+    highlightNewParticipants(participants); // Вызываем функцию подсветки для новых участников
   }
 
-
-  function sortParticipants() {
-  var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
-  var rows = Array.from(table.rows);
-  rows.sort(function(a, b) {
-    var xValueA = parseFloat(a.cells[5].innerText);
-    var xValueB = parseFloat(b.cells[5].innerText);
-    return xValueB - xValueA; // Сортировка по убыванию значения Иксовка
-  });
-  // Обновляем номера мест
-  rows.forEach(function(row, index) {
-    row.cells[0].innerText = index + 1;
-  });
-  // Меняем местами строки в таблице
-  rows.forEach(function(row) {
-    table.appendChild(row);
-  });
-  updatePositions(); // Обновляем места после сортировки
+  function highlightTopParticipants() {
+    var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
+    var rows = Array.from(table.rows);
+    var topThree = rows.slice(0, 3);
+    rows.forEach(function(row) {
+        row.cells[5].classList.remove('highlight'); // Удаляем класс highlight у всех участников
+    });
+    topThree.forEach(function(row) {
+        row.cells[5].classList.add('highlight'); // Добавляем класс highlight только для верхних трех участников
+    });
 }
 
 
 
+
+function sortParticipants() {
+    var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
+    var rows = Array.from(table.rows);
+    rows.sort(function(a, b) {
+        var xValueA = parseFloat(a.cells[5].innerText);
+        var xValueB = parseFloat(b.cells[5].innerText);
+        return xValueB - xValueA; // Сортировка по убыванию значения Иксовка
+    });
+    // Обновляем номера мест
+    rows.forEach(function(row, index) {
+        row.cells[0].innerText = index + 1;
+    });
+    // Меняем местами строки в таблице
+    rows.forEach(function(row) {
+        table.appendChild(row);
+    });
+    updatePositions(); // Обновляем места после сортировки
+    highlightTopParticipants(); // Добавляем вызов функции для выделения верхних участников
+}
+
+
+  function reapplyHighlighting() {
+    var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
+    var rows = table.rows;
+    for (var i = 0; i < rows.length; i++) {
+        var xValue = parseFloat(rows[i].cells[5].innerText);
+        if (xValue === 0) continue; // Пропускаем значения Иксов, равные 0
+        var prevRow = rows[i - 1];
+        if (prevRow && prevRow.cells[5].classList.contains('highlight')) {
+            if (parseFloat(prevRow.cells[5].innerText) > xValue) {
+                rows[i].cells[5].classList.remove('highlight');
+            }
+        }
+        if (!rows[i].cells[5].classList.contains('highlight')) {
+            rows[i].cells[5].classList.add('highlight');
+        }
+    }
+}
 
 
 </script>
