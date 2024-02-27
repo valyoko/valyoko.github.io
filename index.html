@@ -209,19 +209,30 @@
     }
   }
 
-  // Функция для сортировки участников по местам
+
   function sortParticipants() {
-    var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
-    var rows = Array.from(table.rows).slice(1); // Пропускаем заголовок
-    rows.sort(function(a, b) {
-      return parseFloat(b.cells[5].innerText) - parseFloat(a.cells[5].innerText); // Сортировка по убыванию значения Иксовка
-    });
-    // Добавляем отсортированные строки
-    rows.forEach(function(row, index) {
-      table.appendChild(row);
-    });
-    updatePositions(); // Обновляем места после сортировки
-  }
+  var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
+  var rows = Array.from(table.rows);
+  rows.sort(function(a, b) {
+    var xValueA = parseFloat(a.cells[5].innerText);
+    var xValueB = parseFloat(b.cells[5].innerText);
+    return xValueB - xValueA; // Сортировка по убыванию значения Иксовка
+  });
+  // Обновляем номера мест
+  rows.forEach(function(row, index) {
+    row.cells[0].innerText = index + 1;
+  });
+  // Меняем местами строки в таблице
+  rows.forEach(function(row) {
+    table.appendChild(row);
+  });
+  updatePositions(); // Обновляем места после сортировки
+}
+
+
+
+
+
 </script>
 </body>
 </html>
