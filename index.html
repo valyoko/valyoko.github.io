@@ -213,7 +213,9 @@
   cells[3].innerHTML = '<input type="number">';
   cells[4].innerHTML = '<input type="number">';
   cells[5].innerText = "";
-  cells[6].innerHTML = '<button onclick="deleteParticipant(' + userId + ')">Удалить</button>';
+  cells[6].innerHTML = '<button onclick="deleteParticipant(' + userId + ')">Удалить</button>';{
+    saveData();
+  }
 }
   
     function deleteParticipant(userId) {
@@ -260,9 +262,7 @@
           newRow.insertCell(3).innerHTML = '<input type="number" value="' + rows[i].amount + '">';
           newRow.insertCell(4).innerHTML = '<input type="number" value="' + rows[i].win + '">';
           newRow.insertCell(5).innerText = (parseFloat(rows[i].win) / (parseFloat(rows[i].amount) / 100)).toFixed(2);
-          newRow.insertCell(6).innerHTML = '<button onclick="deleteParticipant(' + userId + ')">Удалить</button>'; {
-            saveData();
-          }
+          newRow.insertCell(6).innerHTML = '<button onclick="deleteParticipant(' + userId + ')">Удалить</button>'; 
         }
       }
     }
