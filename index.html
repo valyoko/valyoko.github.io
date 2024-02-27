@@ -11,19 +11,29 @@
     color: #fff;
     margin: 0;
     padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  #container {
+    width: 90%;
+    max-width: 800px;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #333;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
-    background-color: #333;
-    border: 1px solid #444;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   th, td {
     border: 1px solid #444;
     padding: 10px;
     text-align: center;
+    background-color: #444;
   }
   th {
     background-color: #555;
@@ -37,11 +47,16 @@
   input {
     width: calc(100% - 20px);
     padding: 5px 10px;
-    border: 1px solid #888;
+    border: none;
     border-radius: 4px;
     box-sizing: border-box;
     background-color: #222;
     color: #fff;
+    transition: background-color 0.3s;
+  }
+  input:focus {
+    outline: none;
+    background-color: #333;
   }
   button {
     padding: 10px 20px;
@@ -51,6 +66,8 @@
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
+    width: calc(100% - 20px);
+    margin: 10px;
   }
   button:hover {
     background-color: #45a049;
@@ -58,23 +75,24 @@
 </style>
 </head>
 <body>
-<table id="participants">
-  <thead>
-    <tr>
-      <th>Место</th>
-      <th>Ник</th>
-      <th>Сумма бонуски</th>
-      <th>Выигрыш</th>
-      <th>Ставка</th>
-      <th>X</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <!-- Здесь будут добавляться строки участников -->
-  </tbody>
-</table>
-<button onclick="addParticipant()">Добавить</button>
+<div id="container">
+  <table id="participants">
+    <thead>
+      <tr>
+        <th>Место</th>
+        <th>Ник</th>
+        <th>Сумма бонуски</th>
+        <th>Выигрыш</th>
+        <th>X</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Здесь будут добавляться строки участников -->
+    </tbody>
+  </table>
+  <button onclick="addParticipant()">Добавить</button>
+</div>
 
 <script>
   // Функция для добавления участника
@@ -82,16 +100,15 @@
     var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
     var newRow = table.insertRow();
     var cells = [];
-    for (var i = 0; i < 7; i++) {
+    for (var i = 0; i < 6; i++) {
       cells.push(newRow.insertCell(i));
     }
     cells[0].innerText = table.rows.length; // Место
     cells[1].innerHTML = '<input type="text">'; // Ник
     cells[2].innerHTML = '<input type="number">'; // Сумма бонуски
     cells[3].innerHTML = '<input type="number">'; // Выигрыш
-    cells[4].innerHTML = '<input type="number">'; // Ставка
-    cells[5].innerText = ""; // Иксовка
-    cells[6].innerHTML = '<button onclick="deleteParticipant(this)">Удалить</button>'; // Кнопка удаления
+    cells[4].innerText = ""; // Иксовка
+    cells[5].innerHTML = '<button onclick="deleteParticipant(this)">Удалить</button>'; // Кнопка удаления
 
     // Сохранение данных в localStorage
     saveData();
@@ -115,7 +132,6 @@
         nickname: row.cells[1].querySelector('input').value,
         amount: row.cells[2].querySelector('input').value,
         win: row.cells[3].querySelector('input').value,
-        bet: row.cells[4].querySelector('input').value
       };
       data.push(rowData);
     }
@@ -134,9 +150,8 @@
         newRow.insertCell(1).innerHTML = '<input type="text" value="' + rows[i].nickname + '">'; // Ник
         newRow.insertCell(2).innerHTML = '<input type="number" value="' + rows[i].amount + '">'; // Сумма бонуски
         newRow.insertCell(3).innerHTML = '<input type="number" value="' + rows[i].win + '">'; // Выигрыш
-        newRow.insertCell(4).innerHTML = '<input type="number" value="' + rows[i].bet + '">'; // Ставка
-        newRow.insertCell(5).innerText = (parseFloat(rows[i].win) / parseFloat(rows[i].bet)).toFixed(2); // Иксовка
-        newRow.insertCell(6).innerHTML = '<button onclick="deleteParticipant(this)">Удалить</button>'; // Кнопка удаления
+        newRow.insertCell(4).innerText = (parseFloat(rows[i].win) / (parseFloat(rows[i].amount) / 100)).toFixed(2); // Иксовка
+        newRow.insertCell(5).innerHTML = '<button onclick="deleteParticipant(this)">Удалить</button>'; // Кнопка удаления
       }
     }
   }
@@ -148,7 +163,6 @@
   document.addEventListener('input', function(e) {
     if (e.target.closest('td')) {
       updatePositions();
-      saveData();
     }
   });
 
@@ -159,9 +173,9 @@
     var participants = [];
     for (var i = 0; i < rows.length; i++) {
       var win = parseFloat(rows[i].cells[3].getElementsByTagName('input')[0].value.trim());
-      var bet = parseFloat(rows[i].cells[4].getElementsByTagName('input')[0].value.trim());
-      var xValue = win / bet;
-      rows[i].cells[5].innerText = xValue.toFixed(2); // Округляем иксовку до двух знаков после запятой
+      var amount = parseFloat(rows[i].cells[2].getElementsByTagName('input')[0].value.trim());
+      var xValue = win / (amount / 100);
+      rows[i].cells[4].innerText = xValue.toFixed(2); // Округляем иксовку до двух знаков после запятой
       participants.push({
         row: rows[i],
         xValue: xValue
