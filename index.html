@@ -47,7 +47,7 @@
   tr:hover {
     background-color: #666;
   }
-  input {
+  input[type="text"] {
     width: calc(100% - 20px);
     padding: 5px 8px;
     border: none;
@@ -210,8 +210,8 @@
   cells[0].innerText = table.rows.length;
   cells[1].innerHTML = '<input type="text">';
   cells[2].innerHTML = '<input type="text">';
-  cells[3].innerHTML = '<input type="number">';
-  cells[4].innerHTML = '<input type="number">';
+  cells[3].innerHTML = '<input type="text">';
+  cells[4].innerHTML = '<input type="text">';
   cells[5].innerText = "";
   cells[6].innerHTML = '<button onclick="deleteParticipant(' + userId + ')">Удалить</button>';{
     saveData();
@@ -259,8 +259,8 @@
           newRow.insertCell(0).innerText = table.rows.length;
           newRow.insertCell(1).innerHTML = '<input type="text" value="' + rows[i].nickname + '">';
           newRow.insertCell(2).innerHTML = '<input type="text" value="' + rows[i].slot + '">';
-          newRow.insertCell(3).innerHTML = '<input type="number" value="' + rows[i].amount + '">';
-          newRow.insertCell(4).innerHTML = '<input type="number" value="' + rows[i].win + '">';
+          newRow.insertCell(3).innerHTML = '<input type="text" value="' + rows[i].amount + '">';
+          newRow.insertCell(4).innerHTML = '<input type="text" value="' + rows[i].win + '">';
           newRow.insertCell(5).innerText = (parseFloat(rows[i].win) / (parseFloat(rows[i].amount) / 100)).toFixed(2);
           newRow.insertCell(6).innerHTML = '<button onclick="deleteParticipant(' + userId + ')">Удалить</button>'; 
         }
