@@ -16,6 +16,7 @@
     align-items: center;
     height: 100vh;
   }
+
   #container {
     border-radius: 10px;
     overflow: hidden;
@@ -62,7 +63,7 @@
     background-color: #333;
   }
   button {
-    padding: 8px 16px;
+    padding: 8px 20px;
     background-color: #4CAF50;
     color: white;
     border: none;
@@ -70,7 +71,7 @@
     cursor: pointer;
     transition: background-color 0.3s;
     width: calc(33.33% - 16px);
-    margin: 8px 8px 8px 0; /* Изменен отступ для кнопок */
+    margin: 8px 8px 8px 0px; /* Изменен отступ для кнопок */
   }
   button.sort {
     background-color: #008CBA;
@@ -144,6 +145,17 @@
     }
   }
 
+  #video {
+    position: fixed;
+    width: 100px;
+    height: 200px;
+    top: 340px;
+    left: 710px;
+    min-width: 100%;
+    min-height: 45%;
+    z-index: -1;
+  }
+
   /* Стили для текста после завершения */
   .finished-text {
     font-weight: bold;
@@ -168,6 +180,9 @@
 </style>
 </head>
 <body>
+  <video autoplay muted loop id="video">
+    <source src="IMG_2890.MP4" type="video/mp4">
+  </video>
   <div id="container">
     <div id="scrollable-content">
       <table id="participants">
