@@ -317,7 +317,7 @@
       participants.sort(function(a, b) {
         return b.xValue - a.xValue;
       });
-      var topThree = participants.slice(0, 3);
+      var topThree = participants.slice(0, 5);
       for (var i = 0; i < participants.length; i++) {
         participants[i].row.cells[5].classList.remove('highlight');
       }
