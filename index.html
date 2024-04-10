@@ -118,12 +118,12 @@
   }
 
   /* Стили для значения X */
-  td:nth-child(6) {
+  td:nth-child(7) {
     font-weight: bold;
     font-size: 16px;
   }
 
-  td:nth-child(6).highlight {
+  td:nth-child(7).highlight {
     color: #00ff00;
     animation: glow 1s infinite alternate;
   }
@@ -146,7 +146,7 @@
   }
 
   #video {
-    position: fixed;
+  position: fixed;
     width: 100px;
     height: 200px;
     top: 340px;
@@ -177,6 +177,19 @@
   border-radius: 6px; /* Радиус скругления углов полосы прокрутки */
   border: 3px solid #333; /* Цвет обводки полосы прокрутки */
 }
+
+#totalXContainer {
+  margin-top: 10px;
+  margin-left: 20px;
+  padding: 10px;
+  background-color: #555;
+  color: #fff;
+  border-radius: 10px;
+  text-align: center;
+  width: calc(100px); /* Ширина контейнера на 20px меньше, чем контейнер таблицы */
+  box-sizing: border-box; /* Учесть padding внутри ширины */
+}
+
 </style>
 </head>
 <body>
@@ -191,6 +204,7 @@
             <th>Сумма бонуски</th>
             <th>Выигрыш</th>
             <th>X</th>
+            <th>Выбор</th> <!-- Новый столбец для флажков -->
             <th></th>
           </tr>
         </thead>
@@ -206,6 +220,7 @@
     </div>
     <button id="startButton" style="display: none; width: 100%;" onclick="start()">Редактировать</button>
   </div>
+  <div id="totalXContainer">Total X: <span id="totalX">0.00</span></div>
 
   <script>
     var userId = 0;
@@ -214,7 +229,7 @@
   var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
   var newRow = table.insertRow();
   var cells = [];
-  for (var i = 0; i < 7; i++) {
+  for (var i = 0; i < 8; i++) { // Изменено количество ячеек на 8
     cells.push(newRow.insertCell(i));
   }
   userId++;
@@ -225,7 +240,8 @@
   cells[3].innerHTML = '<input type="text">';
   cells[4].innerHTML = '<input type="text">';
   cells[5].innerText = "";
-  cells[6].innerHTML = '<button onclick="deleteParticipant(' + userId + ')">Удалить</button>';{
+  cells[6].innerHTML = '<input type="checkbox" onchange="calculateX()">'; // Добавлен флажок
+  cells[7].innerHTML = '<button onclick="deleteParticipant(' + userId + ')">Удалить</button>';{
     saveData();
   }
 }
@@ -274,7 +290,8 @@
           newRow.insertCell(3).innerHTML = '<input type="text" value="' + rows[i].amount + '">';
           newRow.insertCell(4).innerHTML = '<input type="text" value="' + rows[i].win + '">';
           newRow.insertCell(5).innerText = (parseFloat(rows[i].win) / (parseFloat(rows[i].amount) / 100)).toFixed(2);
-          newRow.insertCell(6).innerHTML = '<button onclick="deleteParticipant(' + userId + ')">Удалить</button>'; 
+          newRow.insertCell(6).innerHTML = '<input type="checkbox" onchange="calculateX()">'; // Добавлен флажок
+          newRow.insertCell(7).innerHTML = '<button onclick="deleteParticipant(' + userId + ')">Удалить</button>'; 
         }
       }
     }
@@ -299,25 +316,44 @@
         rows[i].cells[5].innerText = xValue.toFixed(2);
         participants.push({
           row: rows[i],
-          xValue: xValue
+          xValue: xValue,
+          checked: rows[i].cells[6].querySelector('input').checked // Добавлено свойство checked для флажка
         });
       }
       highlightTopParticipants(participants);
     }
 
-    function refreshUserIds() {
-  var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
-  var rows = table.rows;
-  for (var i = 0; i < rows.length; i++) {
-    rows[i].setAttribute("data-user-id", i + 1);
-  }
+    function calculateX() {
+      var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
+      var rows = table.rows;
+      var totalX = 0;
+      for (var i = 0; i < rows.length; i++) {
+        if (rows[i].cells[6].querySelector('input').checked) { // Проверяем, выбран ли флажок
+          var win = parseFloat(rows[i].cells[4].querySelector('input').value.trim());
+          var amount = parseFloat(rows[i].cells[3].querySelector('input').value.trim());
+          var xValue = win / (amount / 100);
+          totalX += xValue;
+        }
+      }
+      document.getElementById('totalX').innerText = totalX.toFixed(2);
+    }
+
+    function updateTotalX() {
+  var totalX = 0;
+  var checkboxes = document.querySelectorAll('#participants input[type="checkbox"]:checked');
+  checkboxes.forEach(function(checkbox) {
+    var row = checkbox.closest('tr');
+    var xValue = parseFloat(row.cells[5].innerText);
+    totalX += xValue;
+  });
+  document.getElementById('totalX').innerText = totalX.toFixed(2);
 }
 
     function highlightTopParticipants(participants) {
       participants.sort(function(a, b) {
         return b.xValue - a.xValue;
       });
-      var topThree = participants.slice(0, 5);
+      var topThree = participants.slice(0, 3);
       for (var i = 0; i < participants.length; i++) {
         participants[i].row.cells[5].classList.remove('highlight');
       }
@@ -327,22 +363,20 @@
     }
 
     function sortParticipants() {
-      var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
-      var rows = Array.from(table.rows);
-      rows.sort(function(a, b) {
-        var xValueA = parseFloat(a.cells[5].innerText);
-        var xValueB = parseFloat(b.cells[5].innerText);
-        return xValueB - xValueA;
-      });
-      rows.forEach(function(row, index) {
-        row.cells[0].innerText = index + 1;
-      });
-      rows.forEach(function(row) {
-        table.appendChild(row);
-      });
-      updatePositions();
-      refreshUserIds();
-    }
+  var table = document.getElementById("participants").getElementsByTagName('tbody')[0];
+  var rows = Array.from(table.rows);
+  rows.sort(function(a, b) {
+    var xValueA = parseFloat(a.cells[5].innerText);
+    var xValueB = parseFloat(b.cells[5].innerText);
+    return xValueB - xValueA;
+  });
+  rows.forEach(function(row, index) {
+    row.cells[0].innerText = index + 1;
+    table.appendChild(row);
+  });
+  updatePositions(); // Добавляем эту строку для обновления значений X после сортировки
+  refreshUserIds();
+}
 
     function finish() {
       var inputs = document.querySelectorAll('#participants input[type="text"], #participants input[type="number"]');
